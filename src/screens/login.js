@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, AsyncStorage } from 'react-native';
 
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
+import { connect } from 'react-redux'
 
-import LOGIN from '../graphql/mutations/login'
+import LOGIN_MUTATION from '../graphql/mutations/login'
+import Loading from '../components/Loading'
+import { login } from '../actions/user'
 
 class Login extends Component {
 
     state ={
         username: '',
         password: '',
+        loading: false,
       }
           
       _onChangeText = (text, type) => this.setState({ [type]: text });
     
-      _onSignupPress = async () => {
+      _onLoginPress = async () => {
+        this.setState({ loading: true })
         const { username, password } = this.state
     
         const { data } = await this.props.mutate({
@@ -23,10 +28,19 @@ class Login extends Component {
             password,
           }
         })
-    
-        this.setState({ registered: true })
+        try {
+          await AsyncStorage.setItem('@token', data.tokenAuth.token)
+          console.log(data.tokenAuth.token)
+          this.setState({ loading: false })
+          return this.props.login()
+        } catch (error) {
+          throw error
+        }
       }
   render() {
+    if(this.state.loading){
+      return <Loading />
+    }
     return (
         <View style={styles.container}>
         <TextInput 
@@ -39,13 +53,16 @@ class Login extends Component {
           placeholder="Contraseña"
           onChangeText={text => this._onChangeText(text, 'password')}
         />
-        <Button onPress={this._onSignupPress} style={styles.button} title="LOGIN"></Button>        
+        <Button onPress={this._onLoginPress} style={styles.button} title="LOGIN"></Button>        
       </View>
     );
   }
 }
 
-export default graphql(LOGIN)(Login);
+export default compose(
+  graphql(LOGIN_MUTATION),
+  connect(undefined, { login }),
+)(Login);
 
 const styles = StyleSheet.create({
     container: {
