@@ -1,5 +1,10 @@
-import React from 'react';
+import React, {Component} from 'react';
+import {View, FlatList} from 'react-native';
 import styled from 'styled-components/native';
+import {graphql} from 'react-apollo';
+
+import GET_LINKS from '../graphql/queries/getLinks'
+import Links from '../components/Links'
 
 const Root = styled.View`
   alignItems: center;
@@ -16,10 +21,20 @@ const Text = styled.Text`
   textAlign: center;
 `;
 
-export default function Welcome() {
-  return (
-    <Root>
-      <Text>Welcome, if you see this that mean everything work!!!</Text>
-    </Root>
-  )
+class Welcome extends Component {
+
+  _renderItem = ({ item }) => <Links item={item}/>
+
+  render(){
+    const { data } = this.props
+    return (
+      <FlatList
+        data ={data.links}
+        keyExtractor={item => item.id}
+        renderItem={this._renderItem}
+      />
+    )
+  }  
 }
+
+export default graphql(GET_LINKS)(Welcome)
