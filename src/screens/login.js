@@ -30,7 +30,6 @@ class Login extends Component {
         })
         try {
           await AsyncStorage.setItem('@token', data.tokenAuth.token)
-          console.log(data.tokenAuth.token)
           this.setState({ loading: false })
           return this.props.login()
         } catch (error) {
