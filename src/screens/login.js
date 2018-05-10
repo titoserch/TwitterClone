@@ -10,36 +10,34 @@ import { login } from '../actions/user'
 
 class Login extends Component {
 
-    state ={
-        username: '',
-        password: '',
-        loading: false,
+  state ={
+    username: '',
+    password: '',
+    loading: false,
+  }
+      
+  _onChangeText = (text, type) => this.setState({ [type]: text });
+
+  _onLoginPress = async () => {
+    this.setState({ loading: true })
+    const { username, password } = this.state
+
+    const { data } = await this.props.mutate({
+      variables: {
+        username,
+        password,
       }
-          
-      _onChangeText = (text, type) => this.setState({ [type]: text });
-    
-      _onLoginPress = async () => {
-        this.setState({ loading: true })
-        const { username, password } = this.state
-    
-        const { data } = await this.props.mutate({
-          variables: {
-            username,
-            password,
-          }
-        })
-        try {
-          await AsyncStorage.setItem('@token', data.tokenAuth.token)
-          this.setState({ loading: false })
-          return this.props.login()
-        } catch (error) {
-          throw error
-        }
-      }
-  render() {
-    if(this.state.loading){
-      return <Loading />
+    })
+    try {
+      await AsyncStorage.setItem('@token', data.tokenAuth.token)
+      this.setState({ loading: false })
+      return this.props.login()
+    } catch (error) {
+      throw error
     }
+  }
+  render() {
+
     return (
         <View style={styles.container}>
         <TextInput 

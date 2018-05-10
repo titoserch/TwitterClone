@@ -12,6 +12,7 @@ import login from './src/actions/user'
 import Welcome from './src/components/Welcome';
 import Auth from './src/screens/Auth'
 import Login from './src/screens/login'
+import Navigation from './src/screens/navigations'
 
 if (UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -23,7 +24,7 @@ export default class App extends React.Component {
     appIsReady: false
   }
 
-  componentWillMount(){
+  componentWillMount(){ 
     this._checkIfLogin()
   }
 
@@ -46,7 +47,7 @@ export default class App extends React.Component {
     return (
       <ApolloProvider store={store} client={client}>
         <ThemeProvider theme={colors}>
-          <Login />
+          <Auth />
         </ThemeProvider>
       </ApolloProvider>
     );
